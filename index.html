@@ -1,32 +1,587 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wisebunk</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="script.js"></script>
-  </head>
-  <body>
-    <div class="hero-section">
-      <h1>WISEBUNK <sub>by Adil Amin</sub></h1>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wisebunk</title>
+<style>
+:root{
+  --bg:#f3f2fb; --panel:#ffffff; --panel-2:#ecebf7; --ink:#211f2e; --muted:#6f6c85;
+  --line:#e0dff2; --good:#1e8a5f; --good-bg:#dff3ea; --bad:#d13d5c; --bad-bg:#fbe3e9;
+  --cancel:#8a87a0; --cancel-bg:#e9e8f4; --accent:#5b4fd6; --accent-2:#e08a2f;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1c1a2b; --panel:#252336; --panel-2:#2b2940; --ink:#ece9f7; --muted:#a29fbb;
+  --line:#37344d; --good:#5ecb9a; --good-bg:#1f3b30; --bad:#ef7590; --bad-bg:#402330;
+  --cancel:#a29fbb; --cancel-bg:#332f4a; --accent:#8b7ff0; --accent-2:#f0a457;
+}}
+:root[data-theme="dark"]{
+  --bg:#1c1a2b; --panel:#252336; --panel-2:#2b2940; --ink:#ece9f7; --muted:#a29fbb;
+  --line:#37344d; --good:#5ecb9a; --good-bg:#1f3b30; --bad:#ef7590; --bad-bg:#402330;
+  --cancel:#a29fbb; --cancel-bg:#332f4a; --accent:#8b7ff0; --accent-2:#f0a457;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;padding:24px 16px 70px;}
+.wrap{max-width:1080px;margin:0 auto;}
+h1{font-size:1.4rem;font-weight:700;margin:0 0 3px;letter-spacing:-0.01em;}
+.sub{color:var(--muted);font-size:0.85rem;margin-bottom:0;}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,0.03);}
+.overall{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:16px;}
+.stat{background:var(--panel-2);border-radius:9px;padding:12px 14px;}
+.stat .n{font-size:1.4rem;font-weight:700;}
+.stat .l{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+.stat.pct{background:var(--bad-bg);}
+.stat.pct .n{color:var(--bad);}
+.stat.pct.ok{background:var(--good-bg);}
+.stat.pct.ok .n{color:var(--good);}
+.stat.weeks{background:rgba(201,122,61,0.14);}
+.stat.weeks .n{color:var(--accent-2);}
+.stat.held{background:rgba(47,111,94,0.12);}
+.stat.held .n{color:var(--accent);}
+.stat.cancelled{background:var(--cancel-bg);}
+.stat.cancelled .n{color:var(--cancel);}
+.stat.present{background:var(--good-bg);}
+.stat.present .n{color:var(--good);}
+.stat.absent{background:var(--bad-bg);}
+.stat.absent .n{color:var(--bad);}
+h2{font-size:0.95rem;margin:0 0 14px;font-weight:700;}
+.field-grid{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
+.field{display:flex;flex-direction:column;gap:5px;min-width:130px;}
+.field label{font-size:0.72rem;color:var(--muted);font-weight:600;}
+.field input{width:100%;}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
+input,select,button,textarea{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel-2);color:var(--ink);}
+button{cursor:pointer;background:var(--accent);color:#fff;border:none;font-weight:600;}
+button.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);}
+button.small{padding:7px 12px;font-size:0.8rem;border-radius:7px;}
+@media (max-width:480px){
+  .entry-add .row > *{flex:1 1 100%;}
+  .entry-add select, .entry-add input, .entry-add button{min-height:40px;}
+  .field-grid .field{flex:1 1 100%;}
+  .entry-row{flex-wrap:wrap;}
+  .entry-actions{width:100%;justify-content:flex-end;}
+}
+.hero{
+  background:linear-gradient(135deg, #5b4fd6 0%, #9146d9 100%);
+  color:#fdfcf8;
+  border-radius:14px;
+  padding:22px 24px;
+  margin-bottom:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  flex-wrap:wrap;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{background:linear-gradient(135deg, #4c40b8 0%, #6f2fa8 100%);}}
+:root[data-theme="dark"] .hero{background:linear-gradient(135deg, #4c40b8 0%, #6f2fa8 100%);}
+.hero-title{font-size:1.55rem;font-weight:800;margin:0 0 4px;letter-spacing:-0.01em;}
+.hero-sub{font-size:0.85rem;opacity:0.88;max-width:440px;line-height:1.4;}
+.hero-pct{text-align:right;flex-shrink:0;}
+.hero-pct .n{font-size:2.1rem;font-weight:800;line-height:1;}
+.hero-pct .l{font-size:0.72rem;opacity:0.85;margin-top:3px;}
+.hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+#modeToggle{background:rgba(255,255,255,0.16);color:#fff;border:1px solid rgba(255,255,255,0.3);}
+#modeToggle:hover{background:rgba(255,255,255,0.26);}
+.subjects-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media (min-width:760px){.subjects-grid{grid-template-columns:1fr 1fr;}}
+.subject{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:11px;overflow:hidden;background:var(--panel);align-self:start;transition:border-color .15s;}
+.subject-risk{border-left-color:var(--bad);}
+.subject-safe{border-left-color:var(--good);}
+.subj-head{display:flex;align-items:center;padding:13px 16px;cursor:pointer;gap:12px;}
+.subj-head:hover{background:var(--panel-2);}
+.subj-head-text{flex:1;min-width:0;}
+.subj-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;color:#fff;flex-shrink:0;}
+.subj-name{font-weight:700;font-size:0.95rem;}
+.subj-meta{font-size:0.76rem;color:var(--muted);margin-top:2px;}
+.subj-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.badge{font-size:0.82rem;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--bad-bg);color:var(--bad);}
+.badge.ok{background:var(--good-bg);color:var(--good);}
+.badge.none{background:var(--cancel-bg);color:var(--muted);}
+.badge.risk{box-shadow:0 0 0 2px var(--bad) inset;}
+.caret{width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;flex-shrink:0;}
+.subject.open .caret{transform:rotate(-135deg);}
+.subj-body{max-height:0;overflow:hidden;transition:max-height .3s ease;border-top:1px solid var(--line);}
+.subject.open .subj-body{max-height:1400px;}
+.entry-list{padding:4px 0;}
+.entry-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:9px 16px;border-bottom:1px solid var(--line);}
+.entry-row:last-child{border-bottom:none;}
+.entry-main{min-width:0;flex:1;}
+.entry-date{font-size:0.84rem;font-weight:600;}
+.status-pill{display:inline-block;font-size:0.72rem;font-weight:700;padding:2px 9px;border-radius:20px;margin-top:3px;}
+.status-pill.present{color:var(--good);background:var(--good-bg);}
+.status-pill.absent{color:var(--bad);background:var(--bad-bg);}
+.status-pill.cancelled{color:var(--cancel);background:var(--cancel-bg);}
+.status-edit{font-size:0.75rem;font-weight:700;padding:3px 8px;border-radius:20px;margin-top:3px;cursor:pointer;border:1px solid var(--line);}
+.status-edit.present{color:var(--good);background:var(--good-bg);}
+.status-edit.absent{color:var(--bad);background:var(--bad-bg);}
+.status-edit.cancelled{color:var(--cancel);background:var(--cancel-bg);}
+.entry-note{font-size:0.78rem;color:var(--muted);font-style:italic;margin-top:4px;line-height:1.35;}
+.entry-actions{display:flex;gap:6px;flex-shrink:0;}
+.icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.75rem;padding:3px 5px;}
+.icon-btn:hover{color:var(--accent);}
+.icon-btn.danger:hover{color:var(--bad);}
+.overflow-wrap{overflow-x:auto;}
+.entry-add{padding:12px 16px;background:var(--panel-2);border-top:1px solid var(--line);}
+.note-editor{margin-top:6px;}
+.note-editor textarea{width:100%;resize:vertical;font-size:0.82rem;}
+.warn-line{font-size:0.78rem;color:var(--bad);margin-top:4px;}
+.risk-line{font-size:0.82rem;color:var(--bad);margin-top:6px;}
+.risk-line.safe{color:var(--good);}
+footer{margin-top:20px;color:var(--muted);font-size:0.76rem;}
+.pill{font-size:0.72rem;color:var(--muted);padding:10px 16px;display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1 class="hero-title">Wisebunk</h1>
+      <div class="hero-sub" style="opacity:0.75;margin-bottom:4px;">Attendance tracker</div>
+      <div class="hero-sub" id="syncStatus">Connecting…</div>
     </div>
-    <div class="tile">
-      <h2>Data Structures</h2>
-
-      <p >
-        Present-<span id="present-count">0</span><button type="button">+</button
-        ><button type="button">-</button>
-      </p>
-
-      <p>
-        Absent-<span id="absent-count">0</span><button type="button">+</button><button type="button">-</button>
-      </p>
-      <p>
-        Canceled-<span id="canceled-count">0</span><button type="button">+</button
-        ><button type="button">-</button>
-      </p>
-      <p>Percentage-0</p>
+    <div class="hero-actions">
+      <div class="hero-pct" id="heroPct"></div>
+      <button class="small" id="modeToggle" style="white-space:nowrap;">Switch to edit mode</button>
     </div>
-  </body>
+  </div>
+
+  <div class="panel" id="semPanel">
+    <h2>Semester settings</h2>
+    <div class="field-grid">
+      <div class="field">
+        <label>Start date</label>
+        <input type="date" id="semStart">
+      </div>
+      <div class="field">
+        <label>Total teaching weeks</label>
+        <input type="number" id="semWeeks">
+      </div>
+      <div class="field" style="flex:1.4;">
+        <label>Non-teaching weeks (comma-separated, e.g. 9,16)</label>
+        <input type="text" id="semHolidays" placeholder="e.g. 9,10">
+      </div>
+      <div class="field" style="justify-content:flex-end;">
+        <button id="saveSem">Save changes</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel overall" id="overallStats"></div>
+
+  <div class="panel">
+    <h2>Subjects</h2>
+    <div id="subjects"></div>
+  </div>
+
+  <footer>
+    Percentage = present ÷ (present + absent) per subject. Cancelled classes are excluded. Max-misses figures assume 75% required and project across remaining scheduled classes for the semester.
+    <br><br>
+    Wisebunk is a personal attendance-tracking tool built with AI assistance (Claude) for educational use by a student. It is not an official university product.
+  </footer>
+</div>
+
+<script>
+// ==== PASTE YOUR DEPLOYED APPS SCRIPT WEB APP URL HERE ====
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzbN2jGrl93_qbwpS1KXTKczcueC0NpwoPeCBtUmgvepsChDiz_mf3ZNCZhkwBJYay/exec";
+// ============================================================
+
+const STORE_KEY = "attendance_tracker_v1";
+let syncMode = "local"; // "local" or "cloud"
+let saveQueued = false;
+let uiMode = "view"; // "view" or "edit"
+let noteEditKey = null; // "si-ei" of the entry currently being noted, or null
+let dateWarnKey = null; // si of a subject whose add-entry form needs a date
+let openSubjects = new Set(); // subject ids currently expanded — survives re-renders
+
+function localLoad(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return defaultState();
+}
+function defaultState(){
+  return {
+    semester: { start:"2026-09-07", weeks:15, holidays:"9,10" },
+    subjects: [
+      {id:"arabic", name:"Arabic for Understanding Quran", instructor:"Dr. Siddiqa Tahira", day:"Monday", time:"12:30–2:00", combined:false,
+        entries:[
+          {date:"2026-09-07", status:"cancelled"},
+          {date:"2026-09-14", status:"cancelled"},
+          {date:"2026-09-21", status:"absent"},
+          {date:"2026-09-28", status:"absent"}
+        ]},
+      {id:"ideology", name:"Ideology and Constitution of Pakistan", instructor:"Dr. Ikram Ullah Khan", day:"Tuesday", time:"12:30–2:00", combined:false,
+        entries:[
+          {date:"2026-09-08", status:"cancelled"},
+          {date:"2026-09-15", status:"absent"},
+          {date:"2026-09-22", status:"cancelled"}
+        ]},
+      {id:"linalg", name:"Linear Algebra", instructor:"Dr. Muhammad Mustahsan", day:"Wednesday", time:"11:30–1:30", combined:true,
+        entries:[
+          {date:"2026-09-09", status:"cancelled"},
+          {date:"2026-09-16", status:"cancelled"},
+          {date:"2026-09-23", status:"absent"}
+        ]},
+      {id:"comm", name:"Communication Skills", instructor:"Mr. Hafiz M Hammad Javed", day:"Thursday", time:"11:30–1:30", combined:true,
+        entries:[
+          {date:"2026-09-10", status:"cancelled"},
+          {date:"2026-09-17", status:"cancelled"},
+          {date:"2026-09-24", status:"cancelled"}
+        ]},
+      {id:"sre", name:"Software Requirement Engineering", instructor:"Ms. Sidra Saleem", day:"Thursday & Friday", time:"1:30–2:30 / 11:30–12:30", combined:false,
+        entries:[
+          {date:"2026-09-10", status:"cancelled"},
+          {date:"2026-09-11", status:"cancelled"},
+          {date:"2026-09-16", status:"absent", note:"Shifted from Thursday to Wednesday this week"},
+          {date:"2026-09-18", status:"cancelled"},
+          {date:"2026-09-24", status:"absent"},
+          {date:"2026-09-25", status:"absent"}
+        ]},
+      {id:"ds", name:"Data Structures", instructor:"Mam Zara Mansoor", day:"Friday", time:"12:30–2:30", combined:true,
+        entries:[
+          {date:"2026-09-11", status:"cancelled"},
+          {date:"2026-09-16", status:"absent", note:"Shifted from Friday to Wednesday this week"},
+          {date:"2026-09-25", status:"absent"}
+        ]}
+    ]
+  };
+}
+
+let state = localLoad();
+let saveTimer = null;
+
+function save(){
+  // instant local copy so the UI never feels slow or loses data if offline
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  render();
+  // debounce the actual network write slightly so rapid edits don't fire a request each
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(pushToSheet, 400);
+}
+
+function pushToSheet(){
+  if(!SCRIPT_URL || SCRIPT_URL.indexOf("PASTE_YOUR") === 0) return; // not configured yet
+  saveQueued = true;
+  updateSyncLabel("Saving…");
+  // text/plain avoids a CORS preflight that Apps Script does not handle
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(state)
+  }).then(()=>{
+    saveQueued = false;
+    syncMode = "cloud";
+    updateSyncLabel("Saved to Google Sheet.");
+  }).catch(()=>{
+    saveQueued = false;
+    updateSyncLabel("Could not reach the sheet — working from this device's local copy.");
+  });
+}
+
+function updateSyncLabel(msg){
+  const el = document.getElementById("syncStatus");
+  if(el) el.textContent = msg;
+}
+
+async function initCloudSync(){
+  if(!SCRIPT_URL || SCRIPT_URL.indexOf("PASTE_YOUR") === 0){
+    updateSyncLabel("Google Sheet not connected yet — saving in this browser only.");
+    return;
+  }
+  try{
+    updateSyncLabel("Loading your data…");
+    const res = await fetch(SCRIPT_URL + "?action=load", { method:"GET" });
+    const text = await res.text();
+    const remote = JSON.parse(text);
+    if(remote && remote.subjects && remote.subjects.length){
+      state = remote;
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    } else {
+      // sheet is empty/default: seed it with whatever is currently loaded locally
+      await fetch(SCRIPT_URL, {
+        method:"POST",
+        headers:{ "Content-Type":"text/plain;charset=utf-8" },
+        body: JSON.stringify(state)
+      });
+    }
+    syncMode = "cloud";
+    updateSyncLabel("Synced with your Google Sheet.");
+    render();
+  }catch(e){
+    updateSyncLabel("Could not reach the Google Sheet — showing this device's local copy.");
+  }
+}
+
+function counts(entries){
+  let present=0, absent=0, cancelled=0;
+  entries.forEach(e=>{
+    if(e.status==="present") present++;
+    else if(e.status==="absent") absent++;
+    else cancelled++;
+  });
+  const held = present+absent;
+  const pct = held>0 ? Math.round((present/held)*1000)/10 : null;
+  return {present, absent, cancelled, held, pct};
+}
+
+// estimate total scheduled classes per subject across the semester
+function sessionsPerWeek(subj){
+  return subj.day.includes("&") ? subj.day.split("&").length : 1;
+}
+function totalSemesterClasses(subj){
+  const teachingWeeks = state.semester.weeks - state.semester.holidays.split(",").filter(x=>x.trim()!=="").length;
+  return Math.max(teachingWeeks,0) * sessionsPerWeek(subj);
+}
+function maxMissesAllowed(total){
+  return Math.floor(total * 0.25 + 0.0001);
+}
+
+// week number a given date falls in, relative to semester start (week 1 = start date's week)
+function weekNumberFor(dateStr){
+  const start = new Date(state.semester.start+"T00:00:00");
+  const d = new Date(dateStr+"T00:00:00");
+  const days = Math.floor((d - start) / 86400000);
+  return Math.floor(days/7) + 1;
+}
+// latest week that actually has a logged entry, across every subject
+function weeksPassed(){
+  let latest = 0;
+  state.subjects.forEach(subj=>{
+    subj.entries.forEach(e=>{
+      const wk = weekNumberFor(e.date);
+      if(wk > latest) latest = wk;
+    });
+  });
+  return Math.max(latest, 0);
+}
+
+function fmtDate(d){
+  if(!d) return "";
+  const dt = new Date(d+"T00:00:00");
+  return dt.toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"});
+}
+
+function render(){
+  const editing = uiMode === "edit";
+  document.getElementById("semPanel").style.display = editing ? "" : "none";
+  const toggleBtn = document.getElementById("modeToggle");
+  if(toggleBtn) toggleBtn.textContent = editing ? "Done editing" : "Switch to edit mode";
+
+  document.getElementById("semStart").value = state.semester.start;
+  document.getElementById("semWeeks").value = state.semester.weeks;
+  document.getElementById("semHolidays").value = state.semester.holidays;
+
+  const subjectsEl = document.getElementById("subjects");
+  subjectsEl.innerHTML = "";
+  const subjColors = ["#5b4fd6","#e08a2f","#2f9c8f","#c94f8a","#4a8fd6","#7ab84f"];
+  let allP=0, allA=0, allC=0;
+
+  state.subjects.forEach((subj, si)=>{
+    const c = counts(subj.entries);
+    allP+=c.present; allA+=c.absent; allC+=c.cancelled;
+    const totalSem = totalSemesterClasses(subj);
+    const maxMiss = maxMissesAllowed(totalSem);
+    const missesLeft = maxMiss - c.absent;
+
+    const pctLabel = c.pct===null ? "—" : c.pct+"%";
+    const pctClass = c.pct===null ? "none" : (c.pct>=75 ? "ok" : "");
+    const riskClass = missesLeft<=0 && c.held>0 ? "risk" : "";
+
+    const div = document.createElement("div");
+    const isOpen = openSubjects.has(subj.id);
+    div.className = "subject"
+      + (riskClass ? " subject-risk" : c.pct!==null && c.pct>=75 ? " subject-safe" : "")
+      + (isOpen ? " open" : "");
+    const rows = subj.entries
+      .slice()
+      .sort((a,b)=> a.date.localeCompare(b.date))
+      .map((e)=>{
+        const idx = subj.entries.indexOf(e);
+        const key = si + "-" + idx;
+        const isEditingNote = editing && noteEditKey === key;
+
+        let noteBlock;
+        if(isEditingNote){
+          noteBlock = `<div class="note-editor">
+            <textarea class="noteInput" data-si="${si}" data-ei="${idx}" rows="2" placeholder="Write a note for this lecture...">${e.note ? e.note.replace(/</g,"&lt;") : ""}</textarea>
+            <div class="row" style="margin:6px 0 0;">
+              <button class="small saveNote" data-si="${si}" data-ei="${idx}">Save note</button>
+              <button class="small ghost cancelNote">Cancel</button>
+            </div>
+          </div>`;
+        } else {
+          noteBlock = e.note ? `<div class="entry-note">${e.note}</div>` : "";
+        }
+
+        const actions = editing ? `
+          <div class="entry-actions">
+            <button class="icon-btn noteBtn" data-si="${si}" data-ei="${idx}">${e.note?'edit note':'add note'}</button>
+            <button class="icon-btn danger del" data-si="${si}" data-ei="${idx}">remove</button>
+          </div>` : "";
+
+        const statusMarkup = editing
+          ? `<select class="status-edit ${e.status}" data-si="${si}" data-ei="${idx}">
+              <option value="present" ${e.status==="present"?"selected":""}>Present</option>
+              <option value="absent" ${e.status==="absent"?"selected":""}>Absent</option>
+              <option value="cancelled" ${e.status==="cancelled"?"selected":""}>Cancelled</option>
+            </select>`
+          : `<span class="status-pill ${e.status}">${e.status.charAt(0).toUpperCase()+e.status.slice(1)}</span>`;
+
+        return `<div class="entry-row">
+          <div class="entry-main">
+            <div class="entry-date">${fmtDate(e.date)}</div>
+            ${statusMarkup}
+            ${noteBlock}
+          </div>
+          ${actions}
+        </div>`;
+      }).join("");
+
+    const riskText = c.held===0
+      ? `No classes marked yet.`
+      : missesLeft>0
+        ? `${missesLeft} more absence${missesLeft===1?"":"s"} possible before dropping under 75% for the semester.`
+        : `No margin left — any further absence puts this course under 75% for the semester.`;
+
+    div.innerHTML = `
+      <div class="subj-head" data-si="${si}">
+        <div class="subj-icon" style="background:${subjColors[si % subjColors.length]}">${subj.name.charAt(0)}</div>
+        <div class="subj-head-text">
+          <div class="subj-name">${subj.name}</div>
+          <div class="subj-meta">${subj.instructor} · ${subj.day}</div>
+        </div>
+        <div class="subj-right">
+          <span class="badge ${pctClass} ${riskClass}">${pctLabel}</span>
+          <span class="caret"></span>
+        </div>
+      </div>
+      <div class="subj-body">
+        <div class="entry-list">
+          ${rows || `<span class="pill">No entries yet.</span>`}
+        </div>
+        <div class="entry-add">
+          ${editing ? `
+          <div class="row">
+            <input type="date" class="entDate" data-si="${si}">
+            <select class="entStatus" data-si="${si}">
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <input type="text" class="entNote" data-si="${si}" placeholder="Note (optional)" style="flex:1;min-width:140px">
+            <button class="small addEntry" data-si="${si}">Add</button>
+          </div>
+          ${dateWarnKey===String(si) ? `<div class="warn-line">Pick a date first.</div>` : ""}` : ""}
+          <div class="risk-line ${missesLeft>0 || c.held===0 ? 'safe':''}">${riskText} (${totalSem} classes projected for the semester, ${maxMiss} max misses at 75%.)</div>
+        </div>
+      </div>
+    `;
+    subjectsEl.appendChild(div);
+  });
+
+  const overallTotal = allP+allA;
+  const overallPct = overallTotal>0 ? Math.round((allP/overallTotal)*1000)/10 : 0;
+  const wp = weeksPassed();
+  const wpLabel = wp>0 ? `${wp}` : "—";
+  document.getElementById("heroPct").innerHTML = overallTotal>0
+    ? `<div class="n">${overallPct}%</div><div class="l">overall attendance · week ${wpLabel}</div>`
+    : `<div class="n">—</div><div class="l">no classes logged yet</div>`;
+  document.getElementById("overallStats").innerHTML = `
+    <div class="stat weeks"><div class="n">${wpLabel}</div><div class="l">Weeks passed</div></div>
+    <div class="stat held"><div class="n">${overallTotal}</div><div class="l">Classes held</div></div>
+    <div class="stat cancelled"><div class="n">${allC}</div><div class="l">Cancelled</div></div>
+    <div class="stat present"><div class="n">${allP}</div><div class="l">Present</div></div>
+    <div class="stat absent"><div class="n">${allA}</div><div class="l">Absent</div></div>
+    <div class="stat pct ${overallPct>=75?'ok':''}"><div class="n">${overallPct}%</div><div class="l">Overall attendance</div></div>
+  `;
+
+  // bind events
+  document.querySelectorAll(".subj-head").forEach(h=>{
+    h.addEventListener("click", ()=>{
+      const si = +h.dataset.si;
+      const id = state.subjects[si].id;
+      if(openSubjects.has(id)) openSubjects.delete(id); else openSubjects.add(id);
+      render();
+    });
+  });
+  document.querySelectorAll(".addEntry").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const si = +b.dataset.si;
+      const dateEl = document.querySelector(`.entDate[data-si="${si}"]`);
+      const statusEl = document.querySelector(`.entStatus[data-si="${si}"]`);
+      const noteEl = document.querySelector(`.entNote[data-si="${si}"]`);
+      if(!dateEl.value){ dateWarnKey = String(si); render(); return; }
+      dateWarnKey = null;
+      const entry = {date: dateEl.value, status: statusEl.value};
+      if(noteEl.value.trim()) entry.note = noteEl.value.trim();
+      state.subjects[si].entries.push(entry);
+      save();
+    });
+  });
+  document.querySelectorAll(".status-edit").forEach(sel=>{
+    sel.addEventListener("click", (ev)=> ev.stopPropagation());
+    sel.addEventListener("change", ()=>{
+      const si = +sel.dataset.si, ei = +sel.dataset.ei;
+      state.subjects[si].entries[ei].status = sel.value;
+      save();
+    });
+  });
+  document.querySelectorAll(".noteBtn").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const si = +b.dataset.si, ei = +b.dataset.ei;
+      noteEditKey = si + "-" + ei;
+      render();
+      const ta = document.querySelector(`.noteInput[data-si="${si}"][data-ei="${ei}"]`);
+      if(ta) ta.focus();
+    });
+  });
+  document.querySelectorAll(".saveNote").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const si = +b.dataset.si, ei = +b.dataset.ei;
+      const ta = document.querySelector(`.noteInput[data-si="${si}"][data-ei="${ei}"]`);
+      const trimmed = ta.value.trim();
+      const entry = state.subjects[si].entries[ei];
+      if(trimmed){ entry.note = trimmed; } else { delete entry.note; }
+      noteEditKey = null;
+      save();
+    });
+  });
+  document.querySelectorAll(".cancelNote").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      noteEditKey = null;
+      render();
+    });
+  });
+  document.querySelectorAll(".del").forEach(b=>{
+    b.addEventListener("click", (ev)=>{
+      ev.stopPropagation();
+      const si = +b.dataset.si, ei = +b.dataset.ei;
+      state.subjects[si].entries.splice(ei,1);
+      save();
+    });
+  });
+}
+
+document.getElementById("saveSem").addEventListener("click", ()=>{
+  state.semester = {
+    start: document.getElementById("semStart").value || state.semester.start,
+    weeks: +document.getElementById("semWeeks").value || state.semester.weeks,
+    holidays: document.getElementById("semHolidays").value || ""
+  };
+  save();
+});
+
+document.getElementById("modeToggle").addEventListener("click", ()=>{
+  uiMode = uiMode === "edit" ? "view" : "edit";
+  render();
+});
+
+render();
+initCloudSync();
+</script>
+</body>
 </html>
