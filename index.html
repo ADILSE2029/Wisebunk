@@ -140,7 +140,7 @@ footer{margin-top:20px;color:var(--muted);font-size:0.76rem;}
   <div class="hero">
     <div>
       <h1 class="hero-title">Wisebunk</h1>
-      <div class="hero-sub" style="opacity:0.75;margin-bottom:4px;">Attendance tracker</div>
+      
       <div class="hero-sub" id="syncStatus">Connecting…</div>
     </div>
     <div class="hero-actions">
@@ -177,11 +177,7 @@ footer{margin-top:20px;color:var(--muted);font-size:0.76rem;}
     <div id="subjects"></div>
   </div>
 
-  <footer>
-    Percentage = present ÷ (present + absent) per subject. Cancelled classes are excluded. Max-misses figures assume 75% required and project across remaining scheduled classes for the semester.
-    <br><br>
-    Wisebunk is a personal attendance-tracking tool built with AI assistance (Claude) for educational use by a student. It is not an official university product.
-  </footer>
+  
 </div>
 
 <script>
@@ -489,7 +485,7 @@ function render(){
   const wp = weeksPassed();
   const wpLabel = wp>0 ? `${wp}` : "—";
   document.getElementById("heroPct").innerHTML = overallTotal>0
-    ? `<div class="n">${overallPct}%</div><div class="l">overall attendance · week ${wpLabel}</div>`
+    ? `<div class="n">${overallPct}%</div><div class="l">overall attendance</div>`
     : `<div class="n">—</div><div class="l">no classes logged yet</div>`;
   document.getElementById("overallStats").innerHTML = `
     <div class="stat weeks"><div class="n">${wpLabel}</div><div class="l">Weeks passed</div></div>
