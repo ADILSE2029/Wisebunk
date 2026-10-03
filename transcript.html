@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wisebunk — Transcript</title>
+<link rel="icon" href="attendence.png">
+<style>
+:root{
+  --bg:#f3f2fb; --panel:#ffffff; --panel-2:#ecebf7; --ink:#211f2e; --muted:#6f6c85;
+  --line:#e0dff2; --good:#1e8a5f; --good-bg:#dff3ea; --bad:#d13d5c; --bad-bg:#fbe3e9;
+  --warn:#c97a1f; --warn-bg:#f8ecd9;
+  --cancel:#8a87a0; --cancel-bg:#e9e8f4; --accent:#5b4fd6; --accent-2:#e08a2f;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1c1a2b; --panel:#252336; --panel-2:#2b2940; --ink:#ece9f7; --muted:#a29fbb;
+  --line:#37344d; --good:#5ecb9a; --good-bg:#1f3b30; --bad:#ef7590; --bad-bg:#402330;
+  --warn:#e3a85c; --warn-bg:#3d3220;
+  --cancel:#a29fbb; --cancel-bg:#332f4a; --accent:#8b7ff0; --accent-2:#f0a457;
+}}
+:root[data-theme="dark"]{
+  --bg:#1c1a2b; --panel:#252336; --panel-2:#2b2940; --ink:#ece9f7; --muted:#a29fbb;
+  --line:#37344d; --good:#5ecb9a; --good-bg:#1f3b30; --bad:#ef7590; --bad-bg:#402330;
+  --warn:#e3a85c; --warn-bg:#3d3220;
+  --cancel:#a29fbb; --cancel-bg:#332f4a; --accent:#8b7ff0; --accent-2:#f0a457;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;padding:24px 16px 70px;}
+.wrap{max-width:960px;margin:0 auto;}
+.hero{background:linear-gradient(135deg,#5b4fd6 0%,#9146d9 100%);color:#fdfcf8;border-radius:14px;padding:22px 24px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{background:linear-gradient(135deg,#4c40b8 0%,#6f2fa8 100%);}}
+:root[data-theme="dark"] .hero{background:linear-gradient(135deg,#4c40b8 0%,#6f2fa8 100%);}
+.hero-title{font-size:1.5rem;font-weight:800;margin:0 0 4px;letter-spacing:-0.01em;}
+.hero-sub{font-size:0.85rem;opacity:0.88;}
+.hero-pct{text-align:right;}
+.hero-pct .n{font-size:2.1rem;font-weight:800;line-height:1;}
+.hero-pct .l{font-size:0.72rem;opacity:0.85;margin-top:3px;}
+.back-link{display:inline-block;font-size:0.82rem;color:var(--accent);text-decoration:none;margin-bottom:14px;font-weight:600;}
+.back-link:hover{text-decoration:underline;}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+.sem-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.sem-title{font-weight:700;font-size:1.02rem;}
+.sem-gpas{display:flex;gap:10px;}
+.gpa-chip{font-size:0.78rem;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--panel-2);color:var(--ink);}
+.gpa-chip.sgpa{background:rgba(91,79,214,0.12);color:var(--accent);}
+.gpa-chip.cgpa{background:var(--good-bg);color:var(--good);}
+table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+th{text-align:left;font-size:0.7rem;color:var(--muted);padding:7px 10px 6px;border-bottom:1px solid var(--line);}
+td{padding:8px 10px;border-bottom:1px solid var(--line);}
+tr:last-child td{border-bottom:none;}
+.overflow-wrap{overflow-x:auto;}
+.grade-pill{display:inline-block;font-size:0.76rem;font-weight:700;padding:2px 9px;border-radius:20px;}
+.grade-a{color:var(--good);background:var(--good-bg);}
+.grade-b{color:var(--accent);background:rgba(91,79,214,0.12);}
+.grade-c{color:var(--warn);background:var(--warn-bg);}
+.grade-d{color:var(--bad);background:var(--bad-bg);}
+.muted-cell{color:var(--muted);font-size:0.8rem;}
+footer{margin-top:20px;color:var(--muted);font-size:0.76rem;}
+.pill{font-size:0.78rem;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back-link" href="index.html">&larr; Back to attendance</a>
+  <div class="hero">
+    <div>
+      <h1 class="hero-title">Transcript</h1>
+      <div class="hero-sub" id="syncStatus">Connecting…</div>
+    </div>
+    <div class="hero-pct" id="heroCgpa"></div>
+  </div>
+
+  <div id="semesters"></div>
+
+  
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzbN2jGrl93_qbwpS1KXTKczcueC0NpwoPeCBtUmgvepsChDiz_mf3ZNCZhkwBJYay/exec";
+
+const defaultData = {
+  semesters: [
+    {
+      name: "1st Semester",
+      sgpa: 2.98, cgpa: 2.98,
+      courses: [
+        {code:"SENG-01102", title:"Programming Fundamentals (Python)", hours:"4 (3-1)", qp:6, grade:"D"},
+        {code:"SENG-01103", title:"Calculus and Analytical Geometry", hours:"3 (3-0)", qp:5.1, grade:"D"},
+        {code:"ENG-301", title:"English Composition", hours:"3 (3-0)", qp:11.4, grade:"B+"},
+        {code:"SENG-01105", title:"Applied Physics", hours:"3 (3-0)", qp:11.1, grade:"B+"},
+        {code:"IS-301", title:"Islamic Studies", hours:"3 (3-0)", qp:12, grade:"A"},
+        {code:"ICT-301", title:"Introduction to ICT / ICT Skills", hours:"3 (2-1)", qp:11.1, grade:"B+"}
+      ]
+    },
+    {
+      name: "2nd Semester — Spring 2026",
+      sgpa: 3.79, cgpa: 3.39,
+      courses: [
+        {code:"STAT-302", title:"Probability & Statistics", hours:"3 (3-0)", qp:11.1, grade:"B+"},
+        {code:"SENG-01205", title:"Technical & Business Writing", hours:"3 (3-0)", qp:12, grade:"A"},
+        {code:"SENG-01204", title:"Digital Logic Design", hours:"3 (3-0)", qp:12, grade:"A"},
+        {code:"SENG-01203", title:"Introduction to Software Engineering", hours:"3 (3-0)", qp:11.4, grade:"B+"},
+        {code:"SENG-01202", title:"Discrete Structures", hours:"3 (3-0)", qp:12, grade:"A"},
+        {code:"SENG-01201", title:"Object Oriented Programming", hours:"4 (3-1)", qp:13.6, grade:"B"}
+      ]
+    }
+  ]
+};
+
+let data = defaultData;
+
+function gradeClass(g){
+  if(!g) return "";
+  const first = g.charAt(0).toUpperCase();
+  if(first==="A") return "grade-a";
+  if(first==="B") return "grade-b";
+  if(first==="C") return "grade-c";
+  return "grade-d";
+}
+
+function updateSyncLabel(msg){
+  const el = document.getElementById("syncStatus");
+  if(el) el.textContent = msg;
+}
+
+function render(){
+  const sems = data.semesters || [];
+  const latest = sems[sems.length-1];
+  document.getElementById("heroCgpa").innerHTML = latest
+    ? `<div class="n">${latest.cgpa}</div><div class="l">current CGPA</div>`
+    : `<div class="n">—</div><div class="l">no results yet</div>`;
+
+  const container = document.getElementById("semesters");
+  container.innerHTML = sems.map(sem=>{
+    const rows = sem.courses.map(c=>`
+      <tr>
+        <td class="muted-cell">${c.code}</td>
+        <td>${c.title}</td>
+        <td class="muted-cell">${c.hours}</td>
+        <td class="muted-cell">${c.qp}</td>
+        <td><span class="grade-pill ${gradeClass(c.grade)}">${c.grade}</span></td>
+      </tr>`).join("");
+    return `
+    <div class="panel">
+      <div class="sem-head">
+        <div class="sem-title">${sem.name}</div>
+        <div class="sem-gpas">
+          <span class="gpa-chip sgpa">SGPA ${sem.sgpa}</span>
+          <span class="gpa-chip cgpa">CGPA ${sem.cgpa}</span>
+        </div>
+      </div>
+      <div class="overflow-wrap">
+      <table>
+        <thead><tr><th>Code</th><th>Course</th><th>Hours</th><th>QP</th><th>Grade</th></tr></thead>
+        <tbody>${rows || `<tr><td colspan="5" class="pill">No courses recorded.</td></tr>`}</tbody>
+      </table>
+      </div>
+    </div>`;
+  }).join("") || `<div class="panel"><span class="pill">No semesters recorded yet.</span></div>`;
+}
+
+async function loadFromSheet(){
+  if(!SCRIPT_URL || SCRIPT_URL.indexOf("PASTE_YOUR") === 0){
+    updateSyncLabel("Google Sheet not connected — showing built-in data.");
+    render();
+    return;
+  }
+  try{
+    updateSyncLabel("Loading your transcript…");
+    const res = await fetch(SCRIPT_URL + "?type=transcript&action=load", { method:"GET" });
+    const text = await res.text();
+    const remote = JSON.parse(text);
+    if(remote && remote.semesters && remote.semesters.length){
+      data = remote;
+    } else {
+      await fetch(SCRIPT_URL + "?type=transcript", {
+        method:"POST",
+        headers:{ "Content-Type":"text/plain;charset=utf-8" },
+        body: JSON.stringify(data)
+      });
+    }
+    updateSyncLabel("Synced with your Google Sheet.");
+  }catch(e){
+    updateSyncLabel("Could not reach the Google Sheet — showing built-in data.");
+  }
+  render();
+}
+
+render();
+loadFromSheet();
+</script>
+</body>
+</html>

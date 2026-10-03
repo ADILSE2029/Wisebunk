@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Wisebunk</title>
+<title>Wisebunk — Attendance Tracker</title>
 <link rel="icon" href="attendence.png">
 <style>
 :root{
@@ -140,12 +140,15 @@ footer{margin-top:20px;color:var(--muted);font-size:0.76rem;}
   <div class="hero">
     <div>
       <h1 class="hero-title">Wisebunk</h1>
-      
+      <div class="hero-sub" style="opacity:0.75;margin-bottom:4px;">Attendance tracker</div>
       <div class="hero-sub" id="syncStatus">Connecting…</div>
     </div>
     <div class="hero-actions">
       <div class="hero-pct" id="heroPct"></div>
-      <button class="small" id="modeToggle" style="white-space:nowrap;">Switch to edit mode</button>
+      <div class="row" style="margin:0;gap:8px;">
+        <a href="transcript.html" class="small" style="background:rgba(255,255,255,0.16);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:7px;padding:7px 12px;font-size:0.8rem;text-decoration:none;white-space:nowrap;">Transcript</a>
+        <button class="small" id="modeToggle" style="white-space:nowrap;">Switch to edit mode</button>
+      </div>
     </div>
   </div>
 
@@ -177,7 +180,11 @@ footer{margin-top:20px;color:var(--muted);font-size:0.76rem;}
     <div id="subjects"></div>
   </div>
 
-  
+  <footer>
+     
+    <br><br>
+    
+  </footer>
 </div>
 
 <script>
@@ -485,7 +492,7 @@ function render(){
   const wp = weeksPassed();
   const wpLabel = wp>0 ? `${wp}` : "—";
   document.getElementById("heroPct").innerHTML = overallTotal>0
-    ? `<div class="n">${overallPct}%</div><div class="l">overall attendance</div>`
+    ? `<div class="n">${overallPct}%</div><div class="l">overall attendance · week ${wpLabel}</div>`
     : `<div class="n">—</div><div class="l">no classes logged yet</div>`;
   document.getElementById("overallStats").innerHTML = `
     <div class="stat weeks"><div class="n">${wpLabel}</div><div class="l">Weeks passed</div></div>
